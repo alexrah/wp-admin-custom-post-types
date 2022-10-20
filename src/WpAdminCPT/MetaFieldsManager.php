@@ -1,5 +1,5 @@
 <?php
-namespace VnTheme\backend;
+namespace WpAdminCPT;
 
 use WP_Post;
 

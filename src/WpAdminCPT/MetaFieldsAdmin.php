@@ -1,8 +1,8 @@
 <?php
-namespace VnTheme\backend;
+namespace WpAdminCPT;
 
 use WP_Post;
-use VnTheme\backend\MetaFieldsRender as MR;
+use WpAdminCPT\MetaFieldsRender as MR;
 use VnTheme\frontend\EventHelpers as EH;
 
 class MetaFieldsAdmin {
