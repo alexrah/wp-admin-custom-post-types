@@ -1,0 +1,21 @@
+{
+    "name": "alexrah/wp-admin-custom-post-types",
+    "description": "Requires a Wordpress installation. Helper Classes to create Wordpress Custom Post Types, Post Meta, Custom Taxonomies",
+    "keywords": ["wordpress", "wp", "wp-admin","cpt","custom-post-types","post-meta","custom-taxonomy"],
+    "homepage": "https://github.com/alexrah/wp-admin-settings",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "alessandro stoppato",
+            "email": "alexrah@gmail.com",
+            "homepage": "https://github.com/alexrah/"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "autoload": {
+        "psr-4": {"WpAdminSettings\\": "src/WpAdminCPT"}
+    }
+}
