@@ -3,7 +3,7 @@ namespace WpAdminCPT;
 
 use WP_Post;
 use WpAdminCPT\MetaFieldsRender as MR;
-use VnTheme\frontend\EventHelpers as EH;
+use WpAdminCPT\MetaFieldsHelper as MH;
 
 class MetaFieldsAdmin {
 
@@ -146,7 +146,7 @@ class MetaFieldsAdmin {
 			else
 			{
 				if( $aMetaField["Type"] == "date" ) {
-					$currentData = EH::convertDateTimeZone($_POST[ $aMetaField["Name"] ],'timestamp');
+					$currentData = MH::convertDateTimeZone($_POST[ $aMetaField["Name"] ],'timestamp');
 				} else {
 					// Sanitize user input.
 
