@@ -90,9 +90,27 @@ class MetaFieldsHelper{
 
 			} elseif(!empty($mDateTime)) {
 
-				$aDateTime = explode('-',$mDateTime);
-				$oDateTime->setDate($aDateTime[0],$aDateTime[1],$aDateTime[2]);
-				$oDateTime->setTime(0,0);
+				$mHasTime = strpos($mDateTime,'T');
+
+				if( $mHasTime !== false ){
+
+					$aDateTime  = explode('T',$mDateTime);
+					$aDate = explode('-',$aDateTime[0]);
+					$aTime = explode(':',$aDateTime[1]);
+
+					$oDateTime->setDate($aDate[0],$aDate[1],$aDate[2]);
+					$oDateTime->setTime($aTime[0],$aTime[1]);
+
+				} else {
+
+					$aDateTime = explode('-',$mDateTime);
+					$oDateTime->setDate($aDateTime[0],$aDateTime[1],$aDateTime[2]);
+					$oDateTime->setTime(0,0);
+
+				}
+
+
+
 
 			} else {
 
@@ -103,8 +121,12 @@ class MetaFieldsHelper{
 			switch ($sOutFormat){
 				case 'timestamp':
 					return $oDateTime->format('U');
-				case 'text':
+				case 'text-date':
 					return mysql2date("d F Y", $oDateTime->format('Y-m-d'));
+				case 'text-datetime':
+					return $oDateTime->format('d/m/Y - H:i');
+				case 'datetime-local':
+					return $oDateTime->format('Y-m-d\TH:i');
 				case 'date':
 				default:
 					return $oDateTime->format('Y-m-d');
