@@ -11,15 +11,7 @@ class MetaFieldsManager{
 
 	/**
 	 * @param string $sPrefix a global prefix to prepend to all meta Name
-	 * @param array
-	 *     {Name:string,
-	 *     Label:string,
-	 *     LabelPublic:string,
-	 *     Placeholder:string,
-	 *     Type:string,
-	 *     Validation:string,
-	 *     Group:string
-	 *     } $aArgs[]
+	 * @param array{Name:string,Label:string,LabelPublic:string,Placeholder:string,Type:string,Validation:string,Group:string} $aArgsArr[]
 	 */
 	public function __construct($sPrefix,$aArgsArr) {
 
@@ -33,16 +25,7 @@ class MetaFieldsManager{
 	/**
 	 * Sets a field
 	 *
-	 * @param array
-	 *     {Name:string,
-	 *     Label:string,
-	 *     LabelPublic:string,
-	 *     Placeholder:string,
-	 *     Type:string,
-	 *     Validation:string,
-	 *     Group:string
-	 *     } $aArgs
-	 *
+	 * @param array{Name:string,Label:string,LabelPublic:string,Placeholder:string,Type:string,Validation:string,Group:string} $aArgs
 	 * @return bool true if field successfully pushed to aMetaFields, false otherwise
 	 *
 	 */
@@ -52,7 +35,7 @@ class MetaFieldsManager{
 
 		// add a global prefix to all field names for uniformity
 		if ( substr($aArgs['Name'],0,count($this->sPrefix) ) !== $this->sPrefix ){
-			$aArgs['Name'] = $this->sPrefix.$aArgs['Name'];
+			$aArgs['Name'] = $this->sPrefix . '-' . $aArgs['Name'];
 		}
 
 		$aArgsDefaults = [
