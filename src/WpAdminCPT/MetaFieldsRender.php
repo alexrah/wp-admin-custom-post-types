@@ -3,7 +3,6 @@ namespace WpAdminCPT;
 
 use WP_Post;
 use WpAdminCPT\MetaFieldsHelper as MH;
-use VnTheme\frontend\EventHelpers as EH;
 
 class MetaFieldsRender{
 
@@ -58,6 +57,13 @@ class MetaFieldsRender{
 	}
 
 
+	/**
+	 * @param array $aMetaField
+	 * @param string $sMetaValue
+	 * @param string $sValidation
+	 *
+	 * @return false|string
+	 */
 	private static function selectAddress($aMetaField,$sMetaValue,$sValidation){
 
 		ob_start();
@@ -94,8 +100,7 @@ class MetaFieldsRender{
                 });
 
 
-                var input = /** @type {HTMLInputElement} */(
-                    document.getElementById('pac-input'));
+                var input = /** @type {HTMLInputElement} */document.getElementById('<?php echo $aMetaField['Name'] ?>');
 
                 var types = document.getElementById('type-selector');
                 map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -157,11 +162,10 @@ class MetaFieldsRender{
         </script>
 
         <div class="form-field">
-            <label for="location-indirizzo">Indirizzo</label>
-            <input type="text" name="location-indirizzo" id="pac-input" class="controls" required value="<?php echo  esc_attr($sMetaValue)  ?  esc_attr($sMetaValue)  : ''; ?>">
+            <input type="text" name="<?php echo $aMetaField['Name']?>" id="<?php echo $aMetaField['Name']?>" <?php echo $sValidation; ?>  class="controls" value="<?php echo  esc_attr($sMetaValue)  ?  esc_attr($sMetaValue)  : ''; ?>">
 
-            <input type="hidden" name="location-latitudine" value="<?php echo MH::getMetaData('location-latitudine')?>">
-            <input type="hidden" name="location-longitudine" value="<?php echo MH::getMetaData('location-longitudine')?>">
+            <input type="hidden" name="location-latitudine" id="location-latitudine" value="<?php echo MH::getMetaData('location-latitudine')?>">
+            <input type="hidden" name="location-longitudine" id="location-longitudine" value="<?php echo MH::getMetaData('location-longitudine')?>">
 
             <div id="map-canvas"></div>
             <style type="text/css">
@@ -247,6 +251,7 @@ class MetaFieldsRender{
                     echo self::checkbox($aMetaField,$mMetaValue,$sValidation);
                     break;
                 case 'date':
+                case 'datetime-local':
                     echo self::date($aMetaField,$mMetaValue,$sValidation);
                     break;
                 case 'select-location':
@@ -266,6 +271,7 @@ class MetaFieldsRender{
 	                break;
                 case 'address':
                     echo self::selectAddress($aMetaField,$mMetaValue,$sValidation);
+                    break;
                 default:
 	                echo self::text($aMetaField,$mMetaValue,$sValidation);
 	                break;
@@ -295,7 +301,7 @@ class MetaFieldsRender{
 
 		ob_start();
 		?>
-        <input class="form-control" <?php echo $sValidation; ?> type="<?php echo $aMetaField['Type']?>" id="<?php echo $aMetaField['Name']?>" name="<?php echo $aMetaField['Name']?>" value="<?php echo EH::convertDateTimeZone($sMetaValue); ?>" >
+        <input class="form-control" <?php echo $sValidation; ?> type="<?php echo $aMetaField['Type']?>" id="<?php echo $aMetaField['Name']?>" name="<?php echo $aMetaField['Name']?>" value="<?php echo MH::convertDateTimeZone($sMetaValue,$aMetaField['Type']); ?>" >
 		<?php
 		$sOutput = ob_get_contents();
 		ob_end_clean();
