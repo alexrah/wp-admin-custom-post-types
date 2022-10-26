@@ -57,6 +57,9 @@ class MetaFieldsAdmin {
 	public function init(){
 		add_action( 'save_post', [$this,'saveData'] );
 		add_action('add_meta_boxes',[$this,'addMetaBox']);
+        add_action('admin_enqueue_scripts',function(){
+	        wp_enqueue_style( 'wpadmincpt-css', get_stylesheet_directory_uri() . '/vendor/alexrah/wp-admin-custom-post-types/src/assets/css/admin.css', [], '1.0' );
+        });
     }
 
 	/**
@@ -145,8 +148,10 @@ class MetaFieldsAdmin {
 			}
 			else
 			{
-				if( $aMetaField["Type"] == "date" ) {
+				if( $aMetaField["Type"] == "date" || $aMetaField["Type"] == "datetime-local" ) {
+
 					$currentData = MH::convertDateTimeZone($_POST[ $aMetaField["Name"] ],'timestamp');
+
 				} else {
 					// Sanitize user input.
 
@@ -156,6 +161,14 @@ class MetaFieldsAdmin {
 
 				// Update the meta field in the database.
 				update_post_meta( $iPostId, $aMetaField["Name"], $currentData );
+
+				if ( $aMetaField["Type"] == "address" ) {
+
+					update_post_meta( $iPostId, 'location-latitudine', $_POST['location-latitudine'] );
+					update_post_meta( $iPostId, 'location-longitudine', $_POST['location-longitudine'] );
+
+				}
+
 			}
 		}
 
@@ -181,15 +194,23 @@ class MetaFieldsAdmin {
                 </script>
                 <?php
                 break;
+			case 'excerpt':
+				?>
+                <script>
+                    window.addEventListener('DOMContentLoaded',()=>{
+                        document.getElementById('excerpt').setAttribute('required','');
+                    });
+                </script>
+				<?php
+				break;
             case 'content':
                 ?>
                 <script>
 
                     const editorContainer = document.getElementById("wp-content-editor-container");
                     const editorLabel = document.createElement('h2');
-                    editorLabel.classList.add('invalid-label');
-                    editorLabel.style.display = 'none';
-                    editorLabel.innerText = 'Inserire una testo';
+                    editorLabel.classList.add('validation-label','content-validation-label');
+                    editorLabel.innerText = 'INSERIRE UNA TESTO';
                     editorContainer.insertBefore(editorLabel,editorContainer.firstChild);
 
                     document.forms.post.addEventListener('submit',(e) => {
@@ -258,22 +279,37 @@ class MetaFieldsAdmin {
                         const eTipologiaLocationBox = document.querySelector('#taxonomy-<?php echo $sTaxonomy?>')
 
                         const eValidationLabel = document.createElement('h4');
-                        eValidationLabel.classList.add('custom-validation-label');
-                        eValidationLabel.textContent = 'Si prega di spuntare almeno un termine';
+                        eValidationLabel.classList.add('validation-label','taxonomy-validation-label');
+                        eValidationLabel.textContent = 'SI PREGA DI SPUNTARE ALMENO UN TERMINE';
 
                         eTipologiaLocationBox.insertBefore(eValidationLabel,eTipologiaLocationBox.children[0]);
 
-                        const lTipologiaLocationList = eTipologiaLocationBox.querySelectorAll('#<?php echo $sTaxonomy?>checklist li input');
+                        refreshTerms(eTipologiaLocationBox,eValidationLabel);
 
-                        lTipologiaLocationList.forEach(elem => {
-                            elem.addEventListener('click',(e)=>{
-                                validate_<?php echo $sTaxonomy?>(e,lTipologiaLocationList,eValidationLabel)
-                            })
+                        document.getElementById('<?php echo $sTaxonomy; ?>-add-submit').addEventListener('click',(e)=>{
+
+                            const observeNewTerm = new MutationObserver((mutationsList, observeNewTerm) => {
+                                // Use traditional 'for loops' for IE 11
+                                for(const mutation of mutationsList) {
+
+                                    console.log('mutation',mutation);
+
+                                    if (mutation.type === 'childList') {
+
+                                        console.log('A child node has been added or removed.');
+
+                                        refreshTerms(eTipologiaLocationBox,eValidationLabel);
+
+                                        observeNewTerm.disconnect();
+
+                                    }
+                                }
+                            });
+
+                            observeNewTerm.observe(document.getElementById('<?php echo $sTaxonomy?>checklist'),{ childList: true })
+
+
                         })
-
-                        document.getElementById('post').addEventListener('submit',(e)=>{
-                            validate_<?php echo $sTaxonomy?>(e,lTipologiaLocationList,eValidationLabel);
-                        } );
 
                     });
 
@@ -281,20 +317,53 @@ class MetaFieldsAdmin {
                         const aTipologiaLocationList = Array.from(lTipologiaLocationList);
                         let sValidity;
                         sValidity = aTipologiaLocationList.some(elem => {
+                            console.log('elem.checked',elem.checked);
                             return elem.checked === true;
                         });
+
+                        console.log('aTipologiaLocationList',aTipologiaLocationList);
+                        console.log('sValidity',sValidity);
+
                         if(sValidity){
                             console.log('validate_tipologia valid');
+                            console.log('event',e);
                             eValidationLabel.style.display = 'none';
+
+                            if(e.type === 'submit'){
+                                document.getElementById('post').submit();
+                            }
+
                         } else {
                             console.log('validate_tipologia not valid');
-                            e.preventDefault();
+                            console.log('event type',e);
+                            if(e.type === 'submit'){
+                                e.preventDefault();
+                            }
                             document.getElementById('publish').classList.remove('disabled');
                             document.querySelector('#publishing-action .spinner').classList.remove('is-active');
                             eValidationLabel.style.display = 'block';
                             eValidationLabel.scrollIntoView({behavior: "smooth", block: "center"});
                         }
                     }
+
+                    function refreshTerms(eContainer,eValidationLabel){
+                        const lTipologiaLocationList = eContainer.querySelectorAll('#<?php echo $sTaxonomy?>checklist li input')
+
+                        const clickCallback = (e) => {
+                            validate_<?php echo $sTaxonomy?>(e,lTipologiaLocationList,eValidationLabel)
+                        }
+
+                        lTipologiaLocationList.forEach(elem => {
+                            elem.removeEventListener('click', clickCallback);
+                            elem.addEventListener('click', clickCallback);
+                        })
+
+                        document.getElementById('post').removeEventListener('submit', clickCallback);
+                        document.getElementById('post').addEventListener('submit', clickCallback);
+
+                        return lTipologiaLocationList;
+                    }
+
                 </script>
 	            <?php
                 break;
