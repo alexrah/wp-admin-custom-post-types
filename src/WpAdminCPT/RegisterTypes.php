@@ -11,14 +11,12 @@ namespace WpAdminCPT;
 class RegisterTypes {
 
 	/**
-	 * @var array array of screen IDs
+	 * @var string post_type slug
 	 * */
 	private $screen;
 
 	/**
-	 * @param mixed $screen string $screens screen IDs
-	 * @param array $meta_list array of meta
-	 * @param bool $register_ptype whether use screens IDs to register post_types
+	 * @param string $screen string $screens screen IDs
 	 * @param array $args_post arguments to pass for registering post_types
 	 * <p><b>label_singular</b> string used for labels and define capability </p>
 	 * <p><b>label_plural</b> string used for labels and define capability</p>
@@ -26,6 +24,7 @@ class RegisterTypes {
 	 * <p><b>slug</b> string for custom rewrite rule</p>
 	 * <p><b>taxonomies</b> array of taxonomy slugs</p>
 	 * <p><b>show_in_menu</b> bool|string ie. edit.php?post_type=evento</p>
+	 * <p><b>supports</b> array ie. 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments'</p>
 	 * @param bool $register_tax whether use screens IDs to register taxonomy
 	 * @param array $args_tax arguments to pass for registering taxonomy
 	 * <p><b>label_singular</b> string used for labels</p>
@@ -36,14 +35,12 @@ class RegisterTypes {
 	 * <p><b>slug</b> string Customize the permalink slug. Default to cat-$screen </p>
 	 *
 	 */
-	public function __construct( $screen, $register_ptype = true, $args_post = array(), $register_tax = false, $args_tax = array() ) {
+	public function __construct( $screen, $args_post = array(), $register_tax = false, $args_tax = array() ) {
 
 //		if(is_string($screens)) $screens = array($screens);
 		$this->screen = $screen;
 
-		if($register_ptype) {
-			$this->register_ptype($args_post);
-		}
+		$this->register_ptype($args_post);
 
 		if($register_tax){
 			$this->register_tax($args_tax);
@@ -125,7 +122,7 @@ class RegisterTypes {
 
 				$label_singular = (isset($args['label_singular']))?$args['label_singular']:ucfirst($this->screen);
 				$label_plural = (isset($args['label_plural']))?$args['label_plural']:substr($label_singular,0,-1).'i';
-				$tax_slug = (isset($args['slug']))?$args['slug']:'cat-'.$this->screen;
+				$tax_slug = (isset($args['slug']))?$args['slug']:'cat_'.$this->screen;
 				$linked_types = (isset($args['linked_types']))?$args['linked_types']:$this->screen;
 				$tax_name = (isset($args['tax_name']))?$args['tax_name']:$tax_slug;
 
