@@ -3,9 +3,68 @@ namespace WpAdminCPT;
 
 use WP_Post;
 use WpAdminCPT\MetaFieldsHelper as MH;
+use WpAdminCPT\MetaFieldsPhoto;
 
 class MetaFieldsRender{
 
+
+
+	/**
+	 *
+	 * A generic form field renderer
+	 *
+	 * @param array $aMetaField
+	 * @param WP_Post|null $oPost
+	 *
+	 * @return string
+	 */
+	public static function formField($aMetaField,$oPost = null){
+
+		$mMetaValue = MH::getMetaData($aMetaField['Name'],$oPost);
+		$sValidation = MH::getValidation($aMetaField['Validation']);
+		$sLabel = is_admin()?$aMetaField['Label']:$aMetaField['LabelPublic'];
+		ob_start();
+		?>
+        <div class="form-group">
+            <label for="<?php echo $aMetaField['Name']?>"><?php echo $sLabel; ?></label>
+			<?php switch ($aMetaField['Type']){
+				case 'checkbox':
+					echo self::checkbox($aMetaField,$mMetaValue,$sValidation);
+					break;
+				case 'date':
+				case 'datetime-local':
+					echo self::date($aMetaField,$mMetaValue,$sValidation);
+					break;
+				case 'select-location':
+					echo self::selectLocation($aMetaField,$mMetaValue,$sValidation);
+					break;
+				case 'select-location-multi':
+					echo self::selectLocation($aMetaField,$mMetaValue,$sValidation, true);
+					break;
+				case 'select':
+					echo self::select($aMetaField,$mMetaValue,$sValidation);
+					break;
+				case 'select-multi':
+					echo self::select($aMetaField,$mMetaValue,$sValidation,true);
+					break;
+				case 'select-ajax':
+					echo self::select($aMetaField,$mMetaValue,$sValidation,false,true);
+					break;
+				case 'address':
+					echo self::selectAddress($aMetaField,$mMetaValue,$sValidation);
+					break;
+				default:
+					echo self::text($aMetaField,$mMetaValue,$sValidation);
+					break;
+			} ?>
+        </div>
+		<?php
+		$sOutput = ob_get_contents();
+		ob_end_clean();
+		return $sOutput;
+
+
+	}
 
 	/**
 	 * @param array $aMetaField
@@ -228,63 +287,6 @@ class MetaFieldsRender{
     }
 
 
-	/**
-     *
-     * A generic form field renderer
-     *
-	 * @param array $aMetaField
-	 * @param WP_Post|null $oPost
-	 *
-	 * @return string
-	 */
-	public static function formField($aMetaField,$oPost = null){
-
-	    $mMetaValue = MH::getMetaData($aMetaField['Name'],$oPost);
-		$sValidation = MH::getValidation($aMetaField['Validation']);
-		$sLabel = is_admin()?$aMetaField['Label']:$aMetaField['LabelPublic'];
-		ob_start();
-		?>
-        <div class="form-group">
-            <label for="<?php echo $aMetaField['Name']?>"><?php echo $sLabel; ?></label>
-            <?php switch ($aMetaField['Type']){
-                case 'checkbox':
-                    echo self::checkbox($aMetaField,$mMetaValue,$sValidation);
-                    break;
-                case 'date':
-                case 'datetime-local':
-                    echo self::date($aMetaField,$mMetaValue,$sValidation);
-                    break;
-                case 'select-location':
-                    echo self::selectLocation($aMetaField,$mMetaValue,$sValidation);
-                    break;
-	            case 'select-location-multi':
-		            echo self::selectLocation($aMetaField,$mMetaValue,$sValidation, true);
-		            break;
-                case 'select':
-                    echo self::select($aMetaField,$mMetaValue,$sValidation);
-                    break;
-	            case 'select-multi':
-		            echo self::select($aMetaField,$mMetaValue,$sValidation,true);
-		            break;
-                case 'select-ajax':
-	                echo self::select($aMetaField,$mMetaValue,$sValidation,false,true);
-	                break;
-                case 'address':
-                    echo self::selectAddress($aMetaField,$mMetaValue,$sValidation);
-                    break;
-                default:
-	                echo self::text($aMetaField,$mMetaValue,$sValidation);
-	                break;
-            } ?>
-        </div>
-        <?php
-		$sOutput = ob_get_contents();
-		ob_end_clean();
-		return $sOutput;
-
-
-    }
-
 	private static function text($aMetaField,$sMetaValue,$sValidation){
 
 		ob_start();
@@ -433,6 +435,13 @@ class MetaFieldsRender{
 
     }
 
+	/**
+	 * @param array $aMetaField
+	 * @param string $sMetaValue
+	 * @param string $sValidation
+	 *
+	 * @return false|string
+	 */
 	private static function stub($aMetaField,$sMetaValue,$sValidation){
 
 	    ob_start();
