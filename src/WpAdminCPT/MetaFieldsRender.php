@@ -3,7 +3,6 @@ namespace WpAdminCPT;
 
 use WP_Post;
 use WpAdminCPT\MetaFieldsHelper as MH;
-use WpAdminCPT\MetaFieldsPhoto;
 
 class MetaFieldsRender{
 
