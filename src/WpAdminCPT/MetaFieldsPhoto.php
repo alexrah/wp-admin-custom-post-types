@@ -2,10 +2,9 @@
 namespace WpAdminCPT;
 
 use WP_Post;
-use WpAdminCPT\MetaFieldsRender as MR;
 use WpAdminCPT\MetaFieldsHelper as MH;
 
-class MetaFieldsAdmin {
+class MetaFieldsPhoto {
 
 
 	/**
@@ -18,13 +17,13 @@ class MetaFieldsAdmin {
 	 * Nonce to check for the current form
 	 * @var string
 	*/
-	private $sNonce;
+	private $sNonceBase;
 
 	/**
 	 * Nonce action to give context to Nonce
 	 * @var string
 	 */
-	private $sNonceAction = 'vn_meta_box';
+	private $sNonceAction = 'vn_meta_box-photo';
 
 	/**
 	 * array of screens to register for the current meta-box
@@ -32,22 +31,21 @@ class MetaFieldsAdmin {
 	*/
 	private $aScreens;
 
-	private $sBoxTitle;
-
-	private $sScriptValidation;
 
 	/**
 	 * @param array $aMetaFields
-	 * @param string $sNonce
+	 * @param string $sNonceBase
 	 * @param array $aScreens
 	 */
-	public function __construct($aMetaFields,$sNonce,$aScreens,$sBoxTitle = '') {
+	public function __construct($aMetaFields,$sNonceBase,$aScreens) {
 
 		$this->aMetaFields = $aMetaFields;
-		$this->sNonce = $sNonce;
+
+//        echo 'XXX';
+//        print_r($this->aMetaFields);
+
+		$this->sNonceBase = $sNonceBase;
 		$this->aScreens = $aScreens;
-		$this->sBoxTitle = $sBoxTitle;
-		$this->sScriptValidation = '';
 
 	}
 
@@ -57,9 +55,6 @@ class MetaFieldsAdmin {
 	public function init(){
 		add_action( 'save_post', [$this,'saveData'] );
 		add_action('add_meta_boxes',[$this,'addMetaBox']);
-        add_action('admin_enqueue_scripts',function(){
-	        wp_enqueue_style( 'wpadmincpt-css', get_stylesheet_directory_uri() . '/vendor/alexrah/wp-admin-custom-post-types/src/assets/css/admin.css', [], '1.0' );
-        });
     }
 
 	/**
@@ -67,42 +62,64 @@ class MetaFieldsAdmin {
 	 * */
 	public function addMetaBox() {
 
-
-
 		foreach ( $this->aScreens as $screen ) {
 
-			$id = $screen.'-metabox-'.$this->sNonce;
-			$sBoxTitle = (empty($this->sBoxTitle))?'Dettagli '.$screen:$this->sBoxTitle;
+            /**
+             * @var array{Name:string,Label:string} $aMetaField
+            */
+            foreach (  $this->aMetaFields as $aMetaField ){
 
-			add_meta_box(
-				$id,
-				$sBoxTitle,
-				[$this,'renderFields'],
-				$screen
-			);
+	            $id = $screen.'-metabox-photo-'.$this->getNonce($aMetaField['Name']);
+
+	            $sBoxTitle = (empty($aMetaField['Label'])) ? 'Foto '.$aMetaField['Name'] : $aMetaField['Label'];
+
+	            add_meta_box(
+		            $id,
+		            $sBoxTitle,
+		            [$this,'renderPhoto'],
+		            $screen,
+                    'side',
+                    'default',
+		            $aMetaField
+	            );
+
+            }
 
 		}
 	}
 
+    private function getNonce($sFieldName = ''){
+//        return $this->sNonceBase.'-'.$sFieldName;
+        return $this->sNonceBase;
+    }
+
 	/**
 	 * @param WP_Post $oPost
+	 * @param array{Name:string,Label:string} $aMetaField
 	 */
-	public function renderFields($oPost){
+	public function renderPhoto($oPost,$aArgs){
+
+//        echo 'YYY';
+//        print_r($aArgs);
+		$aMetaField = $aArgs['args'];
+
 		// Add a nonce field so we can check for it later.
-		wp_nonce_field( $this->sNonceAction, $this->sNonce );
-		?>
+		wp_nonce_field( $this->sNonceAction, $this->getNonce( $aMetaField['Name'] ) );
 
-		<ul class="wrap-cf">
-		<?php
-		foreach ($this->aMetaFields as $aMetaField){
+		$mMetaValue = MH::getMetaData($aMetaField['Name'],$oPost);
+		$sImageURL = wp_get_attachment_image_url( $mMetaValue, 'medium' )
+        ?>
 
-            echo MR::formField($aMetaField,$oPost);
+        <div id="container-photo-upload-<?php echo $aMetaField['Name']; ?>"></div>
+        <script type="module"
+                src="<?php echo get_stylesheet_directory_uri() . '/vendor/alexrah/wp-admin-custom-post-types/src/assets/js/photoManager.jsx' ?>"
+                data-value='<?php echo $sImageURL??''; ?>'
+                data-name="<?php echo $aMetaField['Name']?>"
+                data-label="<?php echo $aMetaField['Label']?>"
+            >
+        </script>
+        <?php
 
-		}
-		?>
-		</ul>
-		<?php
-        echo $this->getCustomValidation();
 	}
 
 	/**
@@ -116,7 +133,7 @@ class MetaFieldsAdmin {
 		}
 
 		// Verify that the nonce is valid.
-		if ( ! wp_verify_nonce( $_POST[$this->sNonce], $this->sNonceAction ) ) {
+		if ( ! wp_verify_nonce( $_POST[$this->getNonce()], $this->sNonceAction ) ) {
 			return;
 		}
 
@@ -148,237 +165,16 @@ class MetaFieldsAdmin {
 			}
 			else
 			{
-				if( $aMetaField["Type"] == "date" || $aMetaField["Type"] == "datetime-local" ) {
-
-					$currentData = MH::convertDateTimeZone($_POST[ $aMetaField["Name"] ],'timestamp');
-
-				} else {
-					// Sanitize user input.
-
-					$currentData = (is_array($_POST[$aMetaField["Name"]]))?$_POST[$aMetaField["Name"]]:sanitize_text_field($_POST[$aMetaField["Name"]]);
-
-				}
-
+                // Sanitize text field
+                $currentData = (is_array($_POST[$aMetaField["Name"]]))?$_POST[$aMetaField["Name"]]:sanitize_text_field($_POST[$aMetaField["Name"]]);
 				// Update the meta field in the database.
 				update_post_meta( $iPostId, $aMetaField["Name"], $currentData );
 
-				if ( $aMetaField["Type"] == "address" ) {
-
-					update_post_meta( $iPostId, 'location-latitudine', $_POST['location-latitudine'] );
-					update_post_meta( $iPostId, 'location-longitudine', $_POST['location-longitudine'] );
-
-				}
 
 			}
 		}
 
 	}
 
-	/**
-	 * @param string $sType title, content, tag, cat
-	 * @param string $sTaxonomy optional taxonomy slug to use for some validation types
-	 *
-	 * @return void
-	 */
-	public function setCustomValidation($sType,$sTaxonomy = ''){
-
-		ob_start();
-
-		switch ($sType){
-            case 'title':
-                ?>
-                <script>
-                    window.addEventListener('DOMContentLoaded',()=>{
-                        document.getElementById('title').setAttribute('required','');
-                    });
-                </script>
-                <?php
-                break;
-			case 'excerpt':
-				?>
-                <script>
-                    window.addEventListener('DOMContentLoaded',()=>{
-                        document.getElementById('excerpt').setAttribute('required','');
-                    });
-                </script>
-				<?php
-				break;
-            case 'content':
-                ?>
-                <script>
-
-                    const editorContainer = document.getElementById("wp-content-editor-container");
-                    const editorLabel = document.createElement('h2');
-                    editorLabel.classList.add('validation-label','content-validation-label');
-                    editorLabel.innerText = 'INSERIRE UNA TESTO';
-                    editorContainer.insertBefore(editorLabel,editorContainer.firstChild);
-
-                    document.forms.post.addEventListener('submit',(e) => {
-
-                        if( tinyMCE.get('content').getContent() === '' ) {
-
-                            e.preventDefault();
-                            editorLabel.style.display = 'block';
-
-                        } else {
-                            editorLabel.style.display = 'none';
-                        }
-                    });
-
-                </script>
-                <?php
-                break;
-            case 'tag':
-                if(empty($sTaxonomy)) return;
-                ?>
-                <script>
-                    window.addEventListener('DOMContentLoaded',()=>{
-
-                        const eTagBox = document.querySelector('#tagsdiv-<?php echo $sTaxonomy?>')
-
-                        const eInputPostTag = eTagBox.querySelector('.newtag');
-                        const eListTags  = eTagBox.querySelector('.tagchecklist');
-
-                        eTagBox.querySelector('.button.tagadd').addEventListener('click',(e)=>{
-                            validate_<?php echo $sTaxonomy?>(e,eInputPostTag)
-                        } );
-                        document.getElementById('post').addEventListener('submit',(e)=>{
-                            validate_<?php echo $sTaxonomy?>(e,eInputPostTag,eListTags)
-                        } );
-
-                    });
-
-
-
-                    function validate_<?php echo $sTaxonomy?>(e,eInputPostTag,eListTags){
-
-                        if(eListTags.children.length === 0){
-                            console.log('validate_post_tag_citta not valid');
-                            e.preventDefault();
-                            document.getElementById('publish').classList.remove('disabled');
-                            document.querySelector('#publishing-action .spinner').classList.remove('is-active');
-
-                            eInputPostTag.setCustomValidity('Inserire una citta');
-                        } else {
-                            console.log('validate_post_tag_citta valid');
-                            eInputPostTag.setCustomValidity('');
-                        }
-
-                        eInputPostTag.reportValidity();
-
-                    }
-                </script>
-                <?php
-                break;
-            case 'cat':
-	            if(empty($sTaxonomy)) return;
-                ?>
-                <script>
-                    window.addEventListener('DOMContentLoaded',()=>{
-
-                        const eTipologiaLocationBox = document.querySelector('#taxonomy-<?php echo $sTaxonomy?>')
-
-                        const eValidationLabel = document.createElement('h4');
-                        eValidationLabel.classList.add('validation-label','taxonomy-validation-label');
-                        eValidationLabel.textContent = 'SI PREGA DI SPUNTARE ALMENO UN TERMINE';
-
-                        eTipologiaLocationBox.insertBefore(eValidationLabel,eTipologiaLocationBox.children[0]);
-
-                        refreshTerms(eTipologiaLocationBox,eValidationLabel);
-
-                        document.getElementById('<?php echo $sTaxonomy; ?>-add-submit').addEventListener('click',(e)=>{
-
-                            const observeNewTerm = new MutationObserver((mutationsList, observeNewTerm) => {
-                                // Use traditional 'for loops' for IE 11
-                                for(const mutation of mutationsList) {
-
-                                    console.log('mutation',mutation);
-
-                                    if (mutation.type === 'childList') {
-
-                                        console.log('A child node has been added or removed.');
-
-                                        refreshTerms(eTipologiaLocationBox,eValidationLabel);
-
-                                        observeNewTerm.disconnect();
-
-                                    }
-                                }
-                            });
-
-                            observeNewTerm.observe(document.getElementById('<?php echo $sTaxonomy?>checklist'),{ childList: true })
-
-
-                        })
-
-                    });
-
-                    function validate_<?php echo $sTaxonomy?>(e,lTipologiaLocationList,eValidationLabel){
-                        const aTipologiaLocationList = Array.from(lTipologiaLocationList);
-                        let sValidity;
-                        sValidity = aTipologiaLocationList.some(elem => {
-                            console.log('elem.checked',elem.checked);
-                            return elem.checked === true;
-                        });
-
-                        console.log('aTipologiaLocationList',aTipologiaLocationList);
-                        console.log('sValidity',sValidity);
-
-                        if(sValidity){
-                            console.log('validate_tipologia valid');
-                            console.log('event',e);
-                            eValidationLabel.style.display = 'none';
-
-                            if(e.type === 'submit'){
-                                document.getElementById('post').submit();
-                            }
-
-                        } else {
-                            console.log('validate_tipologia not valid');
-                            console.log('event type',e);
-                            if(e.type === 'submit'){
-                                e.preventDefault();
-                            }
-                            document.getElementById('publish').classList.remove('disabled');
-                            document.querySelector('#publishing-action .spinner').classList.remove('is-active');
-                            eValidationLabel.style.display = 'block';
-                            eValidationLabel.scrollIntoView({behavior: "smooth", block: "center"});
-                        }
-                    }
-
-                    function refreshTerms(eContainer,eValidationLabel){
-                        const lTipologiaLocationList = eContainer.querySelectorAll('#<?php echo $sTaxonomy?>checklist li input')
-
-                        const clickCallback = (e) => {
-                            validate_<?php echo $sTaxonomy?>(e,lTipologiaLocationList,eValidationLabel)
-                        }
-
-                        lTipologiaLocationList.forEach(elem => {
-                            elem.removeEventListener('click', clickCallback);
-                            elem.addEventListener('click', clickCallback);
-                        })
-
-                        document.getElementById('post').removeEventListener('submit', clickCallback);
-                        document.getElementById('post').addEventListener('submit', clickCallback);
-
-                        return lTipologiaLocationList;
-                    }
-
-                </script>
-	            <?php
-                break;
-        }
-
-		$this->sScriptValidation .= ob_get_contents();
-		ob_end_clean();
-
-    }
-
-	/**
-	 * @return string
-	 */
-	private function getCustomValidation(){
-	    return $this->sScriptValidation;
-    }
 
 }
