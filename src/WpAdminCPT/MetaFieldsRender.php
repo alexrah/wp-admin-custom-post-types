@@ -124,9 +124,13 @@ class MetaFieldsRender{
 	 */
 	private static function selectAddress($aMetaField,$sMetaValue,$sValidation){
 
+        if(empty(GMAPAPIKEY)){
+            return "<h2><b>Si prega di impostare la costante: GMAPAPIKEY</b></h2>";
+        }
+
 		ob_start();
 		?>
-        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&key=AIzaSyDiwYVGJb4fDMlWfqXEUtsIKvTwxGAve2o"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&key=<?php echo GMAPAPIKEY; ?>"></script>
         <script>
             window.onload = function () {
                 initialize();
@@ -153,7 +157,7 @@ class MetaFieldsRender{
                             position: results[0].geometry.location
                         });
                     } else {
-                        alert('Geocode was not successful for the following reason: ' + status);
+                        alert('Geocode was not successful for the following reason: ' + status );
                     }
                 });
 
