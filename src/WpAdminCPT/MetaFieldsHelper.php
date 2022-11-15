@@ -127,6 +127,8 @@ class MetaFieldsHelper{
 					return $oDateTime->format('d/m/Y - H:i');
 				case 'datetime-local':
 					return $oDateTime->format('Y-m-d\TH:i');
+				case 'iso':
+					return $oDateTime->format(DateTime::RFC3339);
 				case 'date':
 				default:
 					return $oDateTime->format('Y-m-d');
