@@ -58,7 +58,7 @@ class MetaFieldsAdmin {
 		add_action( 'save_post', [$this,'saveData'] );
 		add_action('add_meta_boxes',[$this,'addMetaBox']);
         add_action('admin_enqueue_scripts',function(){
-	        wp_enqueue_style( 'wpadmincpt-css', get_stylesheet_directory_uri() . '/vendor/alexrah/wp-admin-custom-post-types/src/assets/css/admin.css', [], '1.0' );
+	        wp_enqueue_style( 'wpadmincpt-css', get_stylesheet_directory_uri() . '/vendor/alexrah/wp-admin-custom-post-types/backend/assets/css/admin.css', [], '1.0' );
         });
     }
 
