@@ -25,6 +25,7 @@ class RegisterTypes {
 	 * <p><b>taxonomies</b> array of taxonomy slugs</p>
 	 * <p><b>show_in_menu</b> bool|string ie. edit.php?post_type=evento</p>
 	 * <p><b>supports</b> array ie. 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments'</p>
+	 * <p><b>has_archive</b> bool|string - Whether there should be post type archives, or if a string, the archive slug to use. Will generate the proper rewrite rules if $rewrite is enabled. Default false</p>
 	 * @param bool $register_tax whether use screens IDs to register taxonomy
 	 * @param array $args_tax arguments to pass for registering taxonomy
 	 * <p><b>label_singular</b> string used for labels</p>
@@ -67,11 +68,12 @@ class RegisterTypes {
 				$label_plural = (isset($args['label_plural']))?$args['label_plural']:substr($label_singular,0,-1).'i';
 				$show_in_menu = (isset($args['show_in_menu']))?$args['show_in_menu']:true;
 				$aSupports = $args['supports'] ?? [ 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ];
+				$bHasArchive = $args['has_archive'] ?? false;
 
 				register_post_type( $this->screen,
 					array(
 						'public'          => true,
-						//'has_archive' => true,
+						'has_archive'     => $bHasArchive,
 						'show_in_menu'    => $show_in_menu,
 						'supports'        => $aSupports,
 						'capability_type' => array(strtolower(str_replace(' ','-',$label_singular)),
