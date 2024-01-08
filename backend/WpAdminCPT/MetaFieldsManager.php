@@ -34,7 +34,7 @@ class MetaFieldsManager{
 		if( empty($aArgs['Name']) || empty($aArgs['Label']) ) return false;
 
 		// add a global prefix to all field names for uniformity
-		if ( substr($aArgs['Name'],0,count($this->sPrefix) ) !== $this->sPrefix ){
+		if ( substr($aArgs['Name'],0,strlen($this->sPrefix) ) !== $this->sPrefix ){
 			$aArgs['Name'] = $this->sPrefix . '-' . $aArgs['Name'];
 		}
 
@@ -50,7 +50,7 @@ class MetaFieldsManager{
 		];
 
 		$aArgsComputed = array_merge($aArgsDefaults,$aArgs);
-		$iMetaFieldsCount = count($this->aMetaFields);
+		$iMetaFieldsCount = (isset($this->aMetaFields))?count($this->aMetaFields):0;
 		$this->aMetaFields[] = $aArgsComputed;
 		return ( $iMetaFieldsCount < count($this->aMetaFields));
 
