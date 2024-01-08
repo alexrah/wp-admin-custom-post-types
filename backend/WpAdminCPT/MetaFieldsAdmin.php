@@ -60,7 +60,8 @@ class MetaFieldsAdmin {
         add_action('admin_enqueue_scripts',function(){
 	        wp_enqueue_style( 'wpadmincpt-css', get_stylesheet_directory_uri() . '/vendor/alexrah/wp-admin-custom-post-types/backend/assets/css/admin.css', [], '1.0' );
         });
-    }
+		add_action( 'rest_api_init', [$this,'registerRestFields'] );
+	}
 
 	/**
 	 * Add meta box to screens
@@ -380,5 +381,27 @@ class MetaFieldsAdmin {
 	private function getCustomValidation(){
 	    return $this->sScriptValidation;
     }
+
+	public function registerRestFields(){
+
+		foreach ($this->aScreens as $sScreen){
+
+			register_rest_field( $sScreen, 'postmeta', array(
+				'get_callback' => function ( $object ) {
+
+					$aPostMetas = [];
+					$aPostMetasRaw = get_post_meta( $object['id'] );
+					foreach ($aPostMetasRaw as $sPostMetaKey => $aPostMetaValue){
+						if(str_starts_with($sPostMetaKey, '_')) continue;
+						$aPostMetas[$sPostMetaKey] = $aPostMetaValue[0];
+					}
+
+					return $aPostMetas;
+
+				}, ));
+
+		}
+
+	}
 
 }
