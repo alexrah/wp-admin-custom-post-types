@@ -57,10 +57,21 @@ class MetaFieldsAdmin {
 	public function init(){
 		add_action( 'save_post', [$this,'saveData'] );
 		add_action('add_meta_boxes',[$this,'addMetaBox']);
-        add_action('admin_enqueue_scripts',function(){
-	        wp_enqueue_style( 'wpadmincpt-css', get_stylesheet_directory_uri() . '/vendor/alexrah/wp-admin-custom-post-types/backend/assets/css/admin.css', [], '1.0' );
-        });
 		add_action( 'rest_api_init', [$this,'registerRestFields'] );
+
+		add_action('admin_enqueue_scripts',function(){
+
+			$aParseDirPath = explode('/',__DIR__);
+			$iWpContentKey = array_search('wp-content',$aParseDirPath);
+			if(!$iWpContentKey){
+				return;
+			}
+			$aParseDirPath  = array_slice($aParseDirPath,$iWpContentKey);
+			$sAssetPath = '/' . implode('/',$aParseDirPath) . '/../assets/css/admin.css';
+			wp_enqueue_style( 'wpadmincpt-css',  $sAssetPath, [], '1.0' );
+
+		});
+
 	}
 
 	/**
