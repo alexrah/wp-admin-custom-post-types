@@ -102,7 +102,7 @@ class RegisterTypes {
 					)
 				);
 
-			}, 1 );
+			}, 10 );
 //		}
 
 	}
