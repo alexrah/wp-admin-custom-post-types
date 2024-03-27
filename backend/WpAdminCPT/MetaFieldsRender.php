@@ -52,6 +52,9 @@ class MetaFieldsRender{
 				case 'address':
 					echo self::selectAddress($aMetaField,$mMetaValue,$sValidation);
 					break;
+				case 'data-grid':
+					echo self::dataGridReact($aMetaField,$mMetaValue,$sValidation);
+					break;
 				default:
 					echo self::text($aMetaField,$mMetaValue,$sValidation);
 					break;
@@ -437,6 +440,41 @@ class MetaFieldsRender{
 		die(json_encode($aData));
 
     }
+
+	/**
+	 * @param array $aMetaField
+	 * @param string $sMetaValue
+	 * @param string $sValidation
+	 *
+	 * @return false|string
+	 */
+	private static function dataGridReact($aMetaField,$sMetaValue,$sValidation){
+
+		echo "dataGridReact\n";
+		echo "<pre>";
+		echo '$aMetaField';
+		print_r($aMetaField);
+		echo '$sMetaValue';
+		print_r($sMetaValue);
+		echo "</pre>";
+		ob_start();
+		?>
+
+		<script>
+          window.wpAdminCPT = window.wpAdminCPT || {}
+          window.wpAdminCPT['<?php echo $aMetaField['Name']?>'] = {
+            foo: 'bar'
+          }
+		</script>
+		<div id="<?php echo $aMetaField['Name']?>"></div>
+		<script data-root-id="<?php echo $aMetaField['Name']?>" src="<?php echo get_stylesheet_directory_uri() ?>/vendor/alexrah/wp-admin-custom-post-types/frontend/dataGrid/dist/bundle.js"></script>
+
+		<?php
+		$sOutput = ob_get_contents();
+		ob_end_clean();
+		return $sOutput;
+
+	}
 
 	/**
 	 * @param array $aMetaField
