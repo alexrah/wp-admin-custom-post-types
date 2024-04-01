@@ -467,7 +467,7 @@ class MetaFieldsRender{
           }
 		</script>
 		<div id="<?php echo $aMetaField['Name']?>"></div>
-		<script data-root-id="<?php echo $aMetaField['Name']?>" src="<?php echo get_stylesheet_directory_uri() ?>/vendor/alexrah/wp-admin-custom-post-types/frontend/dataGrid/dist/bundle.js"></script>
+		<script data-root-id="<?php echo $aMetaField['Name']?>" src="<?php echo get_stylesheet_directory_uri() ?>/vendor/alexrah/wp-admin-custom-post-types/frontend/dataGrid/dist/bundle.js?v=<?php echo filemtime(get_stylesheet_directory().'/vendor/alexrah/wp-admin-custom-post-types/frontend/dataGrid/dist/bundle.js')?>"></script>
 
 		<?php
 		$sOutput = ob_get_contents();
