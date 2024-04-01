@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@alexrah/ssh-watch-upload-webpack-plugin": "^1.0.6",
-    "@types/node": "^20.11.30",
+    "@alexrah/ssh-watch-upload-webpack-plugin": "^1.1.1",
+    "@types/node": "^20.12.2",
     "@types/react": "^18.2.73",
-    "@types/react-dom": "^18.2.22",
+    "@types/react-dom": "^18.2.23",
     "dotenv": "^16.4.5",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
