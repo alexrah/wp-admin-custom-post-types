@@ -1,6 +1,9 @@
 import path from 'path';
 import {Configuration, webpack, DefinePlugin} from 'webpack';
 import LiveReloadPlugin from 'webpack-livereload-plugin'
+import SSHWatchUploadWebpackPlugin from '@alexrah/ssh-watch-upload-webpack-plugin'
+import {homedir} from 'os';
+import 'dotenv/config'
 
 const config: Configuration = {
   entry:  './src/Main.tsx',
@@ -28,6 +31,7 @@ const config: Configuration = {
 
 export default function(env,argv):Configuration{
 
+
   config.plugins = [
     new DefinePlugin({
       APP_MODE: JSON.stringify(argv.mode)
@@ -41,7 +45,18 @@ export default function(env,argv):Configuration{
     config.plugins.push(
       new LiveReloadPlugin({
         delay: 500
-      })
+      }),
+      new SSHWatchUploadWebpackPlugin({
+        mode: "development",
+        host: process.env.DEV_TEST_SERVER_IP,
+        port: process.env.DEV_TEST_SERVER_PORT,
+        username: process.env.DEV_TEST_SERVER_USERNAME,
+        passphrase: null,
+        privateKey: homedir()+process.env.DEV_TEST_SERVER_SSH_KEY_PATH,
+        uploadPath: process.env.DEV_TEST_SERVER_UPLOAD_PATH,
+        domain: process.env.DEV_TEST_URL,
+        openDomain: true
+      }),
     );
 
   } else {
