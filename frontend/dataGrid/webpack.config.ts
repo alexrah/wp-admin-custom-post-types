@@ -31,7 +31,6 @@ const config: Configuration = {
 
 export default function(env,argv):Configuration{
 
-
   config.plugins = [
     new DefinePlugin({
       APP_MODE: JSON.stringify(argv.mode)
@@ -52,11 +51,11 @@ export default function(env,argv):Configuration{
         port: process.env.DEV_TEST_SERVER_PORT,
         username: process.env.DEV_TEST_SERVER_USERNAME,
         passphrase: null,
-        privateKey: homedir()+process.env.DEV_TEST_SERVER_SSH_KEY_PATH,
+        privateKeyPath: homedir()+process.env.DEV_TEST_SERVER_SSH_KEY_PATH,
         uploadPath: process.env.DEV_TEST_SERVER_UPLOAD_PATH,
         domain: process.env.DEV_TEST_URL,
         openDomain: true
-      }),
+      })
     );
 
   } else {
