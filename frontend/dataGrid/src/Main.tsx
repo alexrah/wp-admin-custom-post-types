@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import App from './App';
 
 const rootElement = document.getElementById(document.currentScript.dataset.rootId);
 
@@ -19,6 +20,6 @@ if(APP_MODE === 'development'){
 
 ReactDOM.createRoot(rootElement!).render(
   <React.StrictMode>
-    <h1>React App Here!</h1>
+    <App/>
   </React.StrictMode>,
 )
