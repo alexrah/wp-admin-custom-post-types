@@ -6,6 +6,7 @@ type tEnv = {
 declare global {
   interface Window {
     env?: tEnv
+    wpAdminCPT: {}
   }
   const APP_MODE: 'production'|'development';
 
@@ -20,4 +21,9 @@ declare global {
     }
   }
 
+}
+
+export type tCouncilor = {
+  nome: string,
+  cognome: string
 }

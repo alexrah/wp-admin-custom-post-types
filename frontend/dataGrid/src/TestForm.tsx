@@ -1,9 +1,9 @@
 import React from 'react';
-import {tFormData} from "./types";
+import {tCouncilor} from "./types";
 
 type tTestFormProps = {
   id: number;
-  data: tFormData|null
+  data: tCouncilor|null
 }
 
 export default function TestForm({id,data}:tTestFormProps){
