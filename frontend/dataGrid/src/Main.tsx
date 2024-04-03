@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App';
 
-const rootElement = document.getElementById(document.currentScript.dataset.rootId);
+const fieldName = document.currentScript.dataset.fieldName;
+const rootElement = document.getElementById(fieldName);
 
 // @ts-ignore
 window.env = window.env || {};
@@ -20,6 +21,6 @@ if(APP_MODE === 'development'){
 
 ReactDOM.createRoot(rootElement!).render(
   <React.StrictMode>
-    <App/>
+    <App fieldName={fieldName}/>
   </React.StrictMode>,
 )
