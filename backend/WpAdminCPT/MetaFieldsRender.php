@@ -448,26 +448,26 @@ class MetaFieldsRender{
 	 *
 	 * @return false|string
 	 */
-	private static function dataGridReact($aMetaField,$sMetaValue,$sValidation){
+	private static function dataGridReact($aMetaField,$aMetaValue,$sValidation){
 
-		echo "dataGridReact\n";
-		echo "<pre>";
-		echo '$aMetaField';
-		print_r($aMetaField);
-		echo '$sMetaValue';
-		print_r($sMetaValue);
-		echo "</pre>";
+//		echo "dataGridReact\n";
+//		echo "<pre>";
+//		echo '$aMetaField';
+//		print_r($aMetaField);
+//		echo '$sMetaValue';
+//		print_r($aMetaValue);
+//		echo "</pre>";
 		ob_start();
 		?>
 
 		<script>
-          window.wpAdminCPT = window.wpAdminCPT || {}
-          window.wpAdminCPT['<?php echo $aMetaField['Name']?>'] = {
-            foo: 'bar'
-          }
+          window.wpAdminCPT = window.wpAdminCPT || {};
+          window.wpAdminCPT['<?php echo $aMetaField['Name']?>'] = {};
+          window.wpAdminCPT['<?php echo $aMetaField['Name']?>']['data'] = <?php echo json_encode($aMetaValue) ?>;
+          window.wpAdminCPT['<?php echo $aMetaField['Name']?>']['fields'] = <?php echo json_encode($aMetaField['Value']) ?>;
 		</script>
 		<div id="<?php echo $aMetaField['Name']?>"></div>
-		<script data-root-id="<?php echo $aMetaField['Name']?>" src="<?php echo get_stylesheet_directory_uri() ?>/vendor/alexrah/wp-admin-custom-post-types/frontend/dataGrid/dist/bundle.js?v=<?php echo filemtime(get_stylesheet_directory().'/vendor/alexrah/wp-admin-custom-post-types/frontend/dataGrid/dist/bundle.js')?>"></script>
+		<script data-field-name="<?php echo $aMetaField['Name']?>" src="<?php echo get_stylesheet_directory_uri() ?>/vendor/alexrah/wp-admin-custom-post-types/frontend/dataGrid/dist/bundle.js?v=<?php echo filemtime(get_stylesheet_directory().'/vendor/alexrah/wp-admin-custom-post-types/frontend/dataGrid/dist/bundle.js')?>"></script>
 
 		<?php
 		$sOutput = ob_get_contents();
