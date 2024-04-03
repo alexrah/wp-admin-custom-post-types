@@ -25,5 +25,7 @@ declare global {
 
 export type tCouncilor = {
   nome: string,
-  cognome: string
+  cognome: string,
+  voti: string,
+  isEletto: number
 }
