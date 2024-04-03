@@ -1,25 +1,27 @@
 import React from 'react';
 import styled from "@emotion/styled";
-import CouncilorForm from "./CouncilorForm";
-import {tCouncilor} from "./types";
 import logger from "@alexrah/logger";
+import CouncilorForm from "./CouncilorForm";
+import {councilorReducer} from './utilities';
+import type {tCouncilor} from "./types";
+
 
 export default function App(){
 
   const lg = new logger();
 
-  const [countNew,setCountNew] = React.useState(0);
-
   const metaValues:tCouncilor[] = Object.values(window.wpAdminCPT['comunali_listaeletto-candidati_comunali']);
   lg.i('metaValues',metaValues);
 
+  const [councilors,dispatchCouncilors] = React.useReducer(councilorReducer,metaValues);
+
   const handleAddCouncilor = (e) => {
     e.preventDefault();
-    setCountNew(countNew => countNew+1);
+    dispatchCouncilors({type: "add",payload: {oldIndex: null, newIndex: null }})
   }
 
   lg.i('metaValues',metaValues);
-  lg.i('countNew',countNew);
+  // lg.i('countNew',countNew);
 
   const AppContainer = styled.div`
     display: flex;
@@ -29,12 +31,9 @@ export default function App(){
 
   return (
     <AppContainer>
-      {metaValues.map((metaValue,index) => {
-        return <CouncilorForm key={`stored-${index}`} id={index} data={metaValue}/>
+      {councilors.map((councilor,index) => {
+        return <CouncilorForm key={`stored-${index}`} id={index} data={councilor} dispatchCouncilors={dispatchCouncilors}/>
       })}
-      {[...Array(countNew).keys()].map(key => {
-        return <CouncilorForm key={`new-${key}`} id={metaValues.length+key} data={null}/>
-      } )}
       <button onClick={handleAddCouncilor}>Aggiungi Consigliere</button>
     </AppContainer>
   )
