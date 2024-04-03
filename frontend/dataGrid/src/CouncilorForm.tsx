@@ -1,21 +1,20 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import {tCouncilor} from "./types";
+import type {tCouncilor,tCouncilorReducerAction} from "./types";
 
-type tTestFormProps = {
-  id: number;
-  data: tCouncilor|null
+type tCouncilorForm = {
+  id: number,
+  data: tCouncilor|null,
+  dispatchCouncilors: React.Dispatch<tCouncilorReducerAction>
+
 }
 
-export default function CouncilorForm({id,data}:tTestFormProps){
-
-  const [ isActive,setIsActive ] = React.useState(true)
+export default function CouncilorForm({id,data,dispatchCouncilors}:tCouncilorForm){
 
   const handleClickRemove = (e) => {
     e.preventDefault();
-    setIsActive(false);
+    dispatchCouncilors({type: 'remove',payload: {oldIndex: id, newIndex: null}})
   }
-
 
   const CouncilorFormWrapper = styled.div`
     display: flex;
@@ -42,21 +41,16 @@ export default function CouncilorForm({id,data}:tTestFormProps){
   `
 
   return (
-    <>
-    {isActive &&
-      <CouncilorFormWrapper>
-        <input type="text" name={`comunali_listaeletto-candidati_comunali[${id}][nome]`} placeholder="Nome" defaultValue={data?data.nome:''}/>
-        <input type="text" name={`comunali_listaeletto-candidati_comunali[${id}][cognome]`} placeholder="Cognome" defaultValue={data?data.cognome:''}/>
-        <input type="text" className='consigliere-voti' name={`comunali_listaeletto-candidati_comunali[${id}][voti]`} placeholder="Voti" defaultValue={data?data.voti:''}/>
-        <label>
-          Eletto
-          <input type="checkbox" name={`comunali_listaeletto-candidati_comunali[${id}][isEletto]`} defaultValue={0}/>
-        </label>
-        <button onClick={handleClickRemove}>X</button>
-      </CouncilorFormWrapper>
-    }
-    </>
-
+    <CouncilorFormWrapper>
+      <input type="text" name={`comunali_listaeletto-candidati_comunali[${id}][nome]`} placeholder="Nome" defaultValue={data?data.nome:''}/>
+      <input type="text" name={`comunali_listaeletto-candidati_comunali[${id}][cognome]`} placeholder="Cognome" defaultValue={data?data.cognome:''}/>
+      <input type="text" className='consigliere-voti' name={`comunali_listaeletto-candidati_comunali[${id}][voti]`} placeholder="Voti" defaultValue={data?data.voti:''}/>
+      <label>
+        Eletto
+        <input type="checkbox" name={`comunali_listaeletto-candidati_comunali[${id}][isEletto]`} defaultChecked={data?.isEletto?true:false}/>
+      </label>
+      <button onClick={handleClickRemove}>X</button>
+    </CouncilorFormWrapper>
   )
 
 }
