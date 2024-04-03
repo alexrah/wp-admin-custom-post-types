@@ -1,7 +1,7 @@
-import type {tCouncilor, tReorderArrayEvent, tCouncilorReducerAction} from "./types";
+import type { tReorderArrayEvent, tReducerAction } from "./types";
 import logger from "@alexrah/logger";
 
-function reorderArray (event:tReorderArrayEvent, originalArray:tCouncilor[]) {
+function reorderArray (event:tReorderArrayEvent, originalArray:Array<any>) {
   const movedItem = originalArray.find((item, index) => index === event.oldIndex);
   const remainingItems = originalArray.filter((item, index) => index !== event.oldIndex);
 
@@ -14,24 +14,21 @@ function reorderArray (event:tReorderArrayEvent, originalArray:tCouncilor[]) {
   return reorderedItems;
 }
 
-function removeFromArray (event:Pick<tReorderArrayEvent, 'oldIndex'>,originalArray:tCouncilor[]){
+function removeFromArray (event:Pick<tReorderArrayEvent, 'oldIndex'>,originalArray:Array<any>){
 
   return originalArray.filter((item, index) => index !== event.oldIndex);
 
 }
 
 
-export function councilorReducer(state:tCouncilor[],action:tCouncilorReducerAction):tCouncilor[] {
+export function metaDataRowReducer(state:Array<any>, action:tReducerAction):Array<any> {
 
   const lg = new logger();
 
   switch (action.type){
     case "add":
       lg.i('add');
-      return [...state,{
-        nome: '',
-        cognome: '',
-      }];
+      return [...state,{}];
 
     case "remove":
       lg.i('remove');
