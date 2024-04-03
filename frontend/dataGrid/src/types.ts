@@ -1,3 +1,5 @@
+import {councilorReducer} from "./utilities";
+
 type tEnv = {
   LOG_LEVEL: 0|1|2|3|4|5|6
 }
@@ -26,6 +28,18 @@ declare global {
 export type tCouncilor = {
   nome: string,
   cognome: string,
-  voti: string,
-  isEletto: number
+  voti?: string,
+  isEletto?: number
+}
+
+export type tReorderArrayEvent = {
+  oldIndex: number,
+  newIndex: number
+}
+
+type tReducerTypes = 'reorder'|'add'|'remove';
+
+export type tCouncilorReducerAction = {
+  type: tReducerTypes
+  payload: tReorderArrayEvent
 }
