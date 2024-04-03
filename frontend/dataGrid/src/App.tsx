@@ -1,27 +1,32 @@
 import React from 'react';
 import styled from "@emotion/styled";
 import logger from "@alexrah/logger";
-import CouncilorForm from "./CouncilorForm";
-import {councilorReducer} from './utilities';
-import type {tCouncilor} from "./types";
+import RowForm from "./RowForm";
+import {metaDataRowReducer} from './utilities';
+import type { tMetaField } from "./types";
 
+type tAppProps = {
+  fieldName: string
+}
 
-export default function App(){
+export default function App({fieldName}:tAppProps){
 
   const lg = new logger();
 
-  const metaValues:tCouncilor[] = Object.values(window.wpAdminCPT['comunali_listaeletto-candidati_comunali']);
+  const metaValues:Array<any> = Object.values(window.wpAdminCPT[fieldName].data);
   lg.i('metaValues',metaValues);
 
-  const [councilors,dispatchCouncilors] = React.useReducer(councilorReducer,metaValues);
+  const metaFields:tMetaField[] = Object.values(window.wpAdminCPT[fieldName].fields);
+  lg.i('metaFields',metaFields);
 
-  const handleAddCouncilor = (e) => {
+  const [metaDataRow,dispatchMetaDataRow] = React.useReducer(metaDataRowReducer,metaValues);
+
+  const handleAddDataRow = (e) => {
     e.preventDefault();
-    dispatchCouncilors({type: "add",payload: {oldIndex: null, newIndex: null }})
+    dispatchMetaDataRow({type: "add",payload: {oldIndex: null, newIndex: null }})
   }
 
   lg.i('metaValues',metaValues);
-  // lg.i('countNew',countNew);
 
   const AppContainer = styled.div`
     display: flex;
@@ -31,10 +36,10 @@ export default function App(){
 
   return (
     <AppContainer>
-      {councilors.map((councilor,index) => {
-        return <CouncilorForm key={`stored-${index}`} id={index} data={councilor} dispatchCouncilors={dispatchCouncilors}/>
+      {metaDataRow.map((metaData,index) => {
+        return <RowForm fieldName={fieldName} metaFields={metaFields} key={`stored-${index}`} id={index} data={metaData} dispatchMetaDataRow={dispatchMetaDataRow}/>
       })}
-      <button onClick={handleAddCouncilor}>Aggiungi Consigliere</button>
+      <button onClick={handleAddDataRow}>Aggiungi Riga</button>
     </AppContainer>
   )
 
