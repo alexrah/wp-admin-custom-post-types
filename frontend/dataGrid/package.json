@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@alexrah/logger": "^5.1.0",
+    "@emotion/styled": "^11.11.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }
