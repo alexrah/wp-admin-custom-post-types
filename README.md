@@ -42,6 +42,38 @@ function vn_fields(): MetaFieldsManager {
 			"Validation"  => '',
 			"Value"       => ['job-listing','event'],
 			'Group'       => 'global'
+		],
+		[
+			"Name"        => "candidati_comunali",
+			"Label"       => "Candidati Consiglieri",
+			"LabelPublic" => "",
+			"Placeholder" => "",
+			"Type"        => "data-grid",
+			"Validation"  => '',
+			"Group"       => 'global',
+			"Value"       => [
+				[
+					'type' => 'text',
+					'name' => 'nome',
+					'label' => "Nome"
+				],
+				[
+					'type' => 'text',
+					'name' => 'cognome',
+					'label' => "Cognome"
+				],
+				[
+					'type' => 'text',
+					'name' => 'voti',
+					'label' => "Voti"
+				],
+				[
+					'type' => 'checkbox',
+					'name' => 'isEletto',
+					'label' => "Eletto"
+				]
+			]
+
 		]
 	];
 
@@ -107,3 +139,6 @@ change root dir for PHP classes from src to backend
 
 #### version 2.1.0
 add support to Rest API 
+
+#### Version 3.0
+new post_meta type = data-grid -> React UX to manage multi-dimensional array data in a single post_meta 
