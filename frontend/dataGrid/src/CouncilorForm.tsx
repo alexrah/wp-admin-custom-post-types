@@ -38,10 +38,22 @@ export default function CouncilorForm({id,data,dispatchCouncilors}:tCouncilorFor
     button {
       width: 40px;
     }
+    .reorderActions {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      button {
+        font-size: 10px;
+      }
+    }
   `
 
   return (
     <CouncilorFormWrapper>
+      <div className="reorderActions">
+        <button onClick={() => dispatchCouncilors({type: 'reorder',payload: {oldIndex: id, newIndex: id-1}})}>⌃</button>
+        <button onClick={() => dispatchCouncilors({type: 'reorder',payload: {oldIndex: id, newIndex: id+1}})}>⌄</button>
+      </div>
       <input type="text" name={`comunali_listaeletto-candidati_comunali[${id}][nome]`} placeholder="Nome" defaultValue={data?data.nome:''}/>
       <input type="text" name={`comunali_listaeletto-candidati_comunali[${id}][cognome]`} placeholder="Cognome" defaultValue={data?data.cognome:''}/>
       <input type="text" className='consigliere-voti' name={`comunali_listaeletto-candidati_comunali[${id}][voti]`} placeholder="Voti" defaultValue={data?data.voti:''}/>
