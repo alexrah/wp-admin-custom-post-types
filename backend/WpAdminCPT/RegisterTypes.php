@@ -134,6 +134,7 @@ class RegisterTypes {
 					'show_admin_column' => true,
 					'query_var'         => true,
 					'rewrite'           => array( 'slug' => $tax_slug ),
+					'show_in_rest'      => true,
 					'labels'            => array(
 						'name'              => __( 'Cat. '.$label_plural ),
 						'singular_name'     => __( 'Cat. '.$label_singular ),
