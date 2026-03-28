@@ -17,26 +17,36 @@ class RegisterTypes {
 
 	/**
 	 * @param string $screen string $screens screen IDs
-	 * @param array $args_post arguments to pass for registering post_types
-	 * <p><b>label_singular</b> string used for labels and define capability </p>
-	 * <p><b>label_plural</b> string used for labels and define capability</p>
-	 * <p><b>menu_icon</b> string dashicons class</p>
-	 * <p><b>slug</b> string for custom rewrite rule</p>
-	 * <p><b>taxonomies</b> array of taxonomy slugs</p>
-	 * <p><b>show_in_menu</b> bool|string ie. edit.php?post_type=evento</p>
-	 * <p><b>supports</b> array ie. 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments'</p>
-	 * <p><b>has_archive</b> bool|string - Whether there should be post type archives, or if a string, the archive slug to use. Will generate the proper rewrite rules if $rewrite is enabled. Default false</p>
+	 * @param array{label_singular: string, label_plural: string, menu_icon: string, slug: string, taxonomies: array, show_in_menu: bool|string, supports: array, has_archive: bool|string} $args_post
+	 * arguments to pass for registering post_types
+	 * * **label_singular** - string used for labels and define capability
+	 * * **label_plural** - string used for labels and define capability
+	 * * **menu_icon** - string dashicons class
+	 * * **slug** - string for custom rewrite rule
+	 * * **taxonomies** - array of taxonomy slugs
+	 * * **show_in_menu** - bool|string ie. edit.php?post_type=evento
+	 * * **supports** - array ie. 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments'
+	 * * **has_archive** - bool|string - Whether there should be post type archives, or if a string, the archive slug to use. Will generate the proper rewrite rules if $rewrite is enabled. Default false
 	 * @param bool $register_tax whether use screens IDs to register taxonomy
-	 * @param array $args_tax arguments to pass for registering taxonomy
-	 * <p><b>label_singular</b> string used for labels</p>
-	 * <p><b>label_plural</b> string used for labels</p>
-	 * <p><b>cat_name</b> string used to register taxonomy, if not specified use cat-$screens</p>
-	 * <p><b>linked_types</b> (array|string) object types with which the taxonomy should be associated, Default to $screen</p>
-	 * <p><b>hierarchical</b> bool Whether the taxonomy is hierarchical. Default true</p>
-	 * <p><b>slug</b> string Customize the permalink slug. Default to cat-$screen </p>
-	 *
+	 * @deprecated Use separate taxonomy registration instead
+	 * @param array{label_singular: string, label_plural: string, cat_name: string, linked_types: array|string, hierarchical:bool, slug:string} $args_tax_one 
+	 * arguments to pass for registering taxonomy
+	 * * **label_singular** - string used for labels
+	 * * **label_plural** - string used for labels
+	 * * **cat_name** - string used to register taxonomy, if not specified use cat-$screens
+	 * * **linked_types** - (array|string) object types with which the taxonomy should be associated, Default to $screen
+	 * * **hierarchical** - bool Whether the taxonomy is hierarchical. Default true
+	 * * **slug** - string Customize the permalink slug. Default to cat-$screen
+	 * @param array{label_singular: string, label_plural: string, cat_name: string, linked_types: array|string, hierarchical:bool, slug:string} $args_tax_two
+	 * arguments to pass for registering taxonomy
+	 * * **label_singular** - string used for labels
+	 * * **label_plural** - string used for labels
+	 * * **cat_name** - string used to register taxonomy, if not specified use cat-$screens
+	 * * **linked_types** - (array|string) object types with which the taxonomy should be associated, Default to $screen
+	 * * **hierarchical** - bool Whether the taxonomy is hierarchical. Default true
+	 * * **slug** - string Customize the permalink slug. Default to cat-$screen
 	 */
-	public function __construct( $screen, $args_post = array(), $register_tax = false, $args_tax = array() ) {
+	public function __construct( $screen, $args_post = array(), $register_tax = false, $args_tax_one = array(), $args_tax_two = array() ) {
 
 //		if(is_string($screens)) $screens = array($screens);
 		$this->screen = $screen;
@@ -44,19 +54,27 @@ class RegisterTypes {
 		$this->register_ptype($args_post);
 
 		if($register_tax){
-			$this->register_tax($args_tax);
+			trigger_error('The $register_tax parameter is deprecated. Use separate taxonomy registration instead.', E_USER_DEPRECATED);
 		}
+
+		if(!empty($args_tax_one)){
+            $this->register_tax($args_tax_one);
+        }
+
+		if(!empty($args_tax_two)){
+            $this->register_tax($args_tax_two);
+        }
 
 	}
 
 
 	/**
 	 * @param array $args
-	 * <p><b>menu_icon</b> string dashicons class</p>
-	 * <p><b>slug</b> string for custom rewrite rule</p>
-	 * <p><b>taxonomies</b> array of taxonomy IDs</p>
-	 * <p><b>label_singular</b> string </p>
-	 * <p><b>label_plural</b> string </p>
+	 * * **menu_icon** - string dashicons class
+	 * * **slug** - string for custom rewrite rule
+	 * * **taxonomies** - array of taxonomy IDs
+	 * * **label_singular** - string
+	 * * **label_plural** - string
 	*/
 	private function register_ptype($args){
 
@@ -109,11 +127,11 @@ class RegisterTypes {
 
 	/**
 	 * @param array $args
-	 * <p><b>hierarchical</b> </p>
-	 * <p><b>slug</b> string for custom rewrite rule</p>
-	 * <p><b>linked_types</b> array of post_type to link</p>
-	 * <p><b>label_singular</b> string </p>
-	 * <p><b>label_plural</b> string </p>
+	 * * **hierarchical** - bool
+	 * * **slug** - string for custom rewrite rule
+	 * * **linked_types** - array of post_type to link
+	 * * **label_singular** - string
+	 * * **label_plural** - string
 	 */
 	private function register_tax($args){
 
