@@ -33,7 +33,7 @@ class RegisterTypes {
 	 * arguments to pass for registering taxonomy
 	 * * **label_singular** - string used for labels
 	 * * **label_plural** - string used for labels
-	 * * **cat_name** - string used to register taxonomy, if not specified use cat-$screens
+	 * * **tax_name** - string used to register taxonomy, if not specified use cat-$screens
 	 * * **linked_types** - (array|string) object types with which the taxonomy should be associated, Default to $screen
 	 * * **hierarchical** - bool Whether the taxonomy is hierarchical. Default true
 	 * * **slug** - string Customize the permalink slug. Default to cat-$screen
@@ -41,7 +41,7 @@ class RegisterTypes {
 	 * arguments to pass for registering taxonomy
 	 * * **label_singular** - string used for labels
 	 * * **label_plural** - string used for labels
-	 * * **cat_name** - string used to register taxonomy, if not specified use cat-$screens
+	 * * **tax_name** - string used to register taxonomy, if not specified use cat-$screens
 	 * * **linked_types** - (array|string) object types with which the taxonomy should be associated, Default to $screen
 	 * * **hierarchical** - bool Whether the taxonomy is hierarchical. Default true
 	 * * **slug** - string Customize the permalink slug. Default to cat-$screen
