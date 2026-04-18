@@ -37,11 +37,12 @@ class MetaFieldsAdmin {
 	private $sScriptValidation;
 
 	/**
-	 * @param array $aMetaFields
+	 * @param array{Name: string, Validation: 'required'|'', Label: string, LabelPublic: string, Placeholder: string, Type: 'checkbox'|'date'|'datetime-local'|'select-location'|'select-location-multi'|'select'|'select-multi'|'select-ajax'|'address'|'data-grid', Value: array} $aMetaFields
 	 * @param string $sNonce
 	 * @param array $aScreens
+	 * @param string $sBoxTitle
 	 */
-	public function __construct($aMetaFields,$sNonce,$aScreens,$sBoxTitle = '') {
+	public function __construct(array $aMetaFields,string $sNonce,array $aScreens,string $sBoxTitle = '') {
 
 		$this->aMetaFields = $aMetaFields;
 		$this->sNonce = $sNonce;

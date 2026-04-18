@@ -47,7 +47,6 @@ class RegisterTypes {
 	 * * **slug** - string Customize the permalink slug. Default to cat-$screen
 	 */
 	public function __construct( $screen, $args_post = array(), $register_tax = false, $args_tax_one = array(), $args_tax_two = array() ) {
-
 //		if(is_string($screens)) $screens = array($screens);
 		$this->screen = $screen;
 
