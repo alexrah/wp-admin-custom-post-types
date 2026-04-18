@@ -55,6 +55,9 @@ class MetaFieldsRender{
 				case 'data-grid':
 					echo self::dataGridReact($aMetaField,$mMetaValue,$sValidation);
 					break;
+                case 'textarea':
+                    echo self::textArea($aMetaField,$mMetaValue,$sValidation);
+                    break;
 				default:
 					echo self::text($aMetaField,$mMetaValue,$sValidation);
 					break;
@@ -298,6 +301,18 @@ class MetaFieldsRender{
 		ob_start();
 		?>
         <input class="form-control" <?php echo $sValidation; ?> type="<?php echo $aMetaField['Type']?>" id="<?php echo $aMetaField['Name']?>" name="<?php echo $aMetaField['Name']?>" value="<?php echo $sMetaValue?>" placeholder="<?php echo $aMetaField['Placeholder']?>" >
+		<?php
+		$sOutput = ob_get_contents();
+		ob_end_clean();
+		return $sOutput;
+
+	}
+
+	private static function textArea($aMetaField,$sMetaValue,$sValidation){
+
+		ob_start();
+		?>
+        <textarea class="form-control" <?php echo $sValidation; ?> id="<?php echo $aMetaField['Name']?>" name="<?php echo $aMetaField['Name']?>" placeholder="<?php echo $aMetaField['Placeholder']?>" rows="5"><?php echo $sMetaValue?></textarea>
 		<?php
 		$sOutput = ob_get_contents();
 		ob_end_clean();
