@@ -11,7 +11,7 @@ class MetaFieldsManager{
 
 	/**
 	 * @param string $sPrefix a global prefix to prepend to all meta Name
-	 * @param array{Name:string,Label:string,LabelPublic:string,Placeholder:string,Type:string,Validation:string,Group:string} $aArgsArr[]
+	 * @param array{array{Name:string,Label:string,LabelPublic:string,Placeholder:string,Type:string,Validation:string,Group:string}} $aArgsArr
 	 */
 	public function __construct($sPrefix,$aArgsArr) {
 
