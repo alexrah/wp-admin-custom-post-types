@@ -37,7 +37,7 @@ class MetaFieldsAdmin {
 	private $sScriptValidation;
 
 	/**
-	 * @param array{Name: string, Validation: 'required'|'', Label: string, LabelPublic: string, Placeholder: string, Type: 'checkbox'|'date'|'datetime-local'|'select-location'|'select-location-multi'|'select'|'select-multi'|'select-ajax'|'address'|'data-grid', Value: array} $aMetaFields
+	 * @param array{array{Name:string, Validation:'required'|'', Label:string, LabelPublic:string, Placeholder:string, Type:'checkbox'|'date'|'datetime-local'|'select-location'|'select-location-multi'|'select'|'select-multi'|'select-ajax'|'address'|'data-grid', Value:array, Group: string}} $aMetaFields
 	 * @param string $sNonce
 	 * @param array $aScreens
 	 * @param string $sBoxTitle
