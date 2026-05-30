@@ -29,15 +29,7 @@ class RegisterTypes {
 	 * * **has_archive** - bool|string - Whether there should be post type archives, or if a string, the archive slug to use. Will generate the proper rewrite rules if $rewrite is enabled. Default false
 	 * @param bool $register_tax whether use screens IDs to register taxonomy
 	 * @deprecated Use separate taxonomy registration instead
-	 * @param array{label_singular: string, label_plural: string, cat_name: string, linked_types: array|string, hierarchical:bool, slug:string} $args_tax_one 
-	 * arguments to pass for registering taxonomy
-	 * * **label_singular** - string used for labels
-	 * * **label_plural** - string used for labels
-	 * * **tax_name** - string used to register taxonomy, if not specified use cat-$screens
-	 * * **linked_types** - (array|string) object types with which the taxonomy should be associated, Default to $screen
-	 * * **hierarchical** - bool Whether the taxonomy is hierarchical. Default true
-	 * * **slug** - string Customize the permalink slug. Default to cat-$screen
-	 * @param array{label_singular: string, label_plural: string, cat_name: string, linked_types: array|string, hierarchical:bool, slug:string} $args_tax_two
+	 * @param array{array{label_singular: string, label_plural: string, cat_name: string, linked_types: array|string, hierarchical:bool, slug:string}} $args_taxs 
 	 * arguments to pass for registering taxonomy
 	 * * **label_singular** - string used for labels
 	 * * **label_plural** - string used for labels
@@ -46,22 +38,24 @@ class RegisterTypes {
 	 * * **hierarchical** - bool Whether the taxonomy is hierarchical. Default true
 	 * * **slug** - string Customize the permalink slug. Default to cat-$screen
 	 */
-	public function __construct( $screen, $args_post = array(), $register_tax = false, $args_tax_one = array(), $args_tax_two = array() ) {
+	public function __construct( $screen, $args_post = array(), $register_tax = false, $args_taxs = array()  ) {
 //		if(is_string($screens)) $screens = array($screens);
 		$this->screen = $screen;
 
 		$this->register_ptype($args_post);
 
+
 		if($register_tax){
 			trigger_error('The $register_tax parameter is deprecated. Use separate taxonomy registration instead.', E_USER_DEPRECATED);
 		}
 
-		if(!empty($args_tax_one)){
-            $this->register_tax($args_tax_one);
-        }
+		if(isset($args_taxs['label_singular'])){
+			trigger_error('The $args_taxs parameter expects an array of arrays, not a single array.', E_USER_DEPRECATED);
+			$args_taxs = [$args_taxs];
+		}
 
-		if(!empty($args_tax_two)){
-            $this->register_tax($args_tax_two);
+		foreach($args_taxs as $args_tax){
+            $this->register_tax($args_tax);
         }
 
 	}
